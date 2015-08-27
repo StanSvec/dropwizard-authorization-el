@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/StanSvec/dropwizard-authorization-mvel.svg?branch=master)](https://travis-ci.org/StanSvec/dropwizard-authorization-mvel)
+[![Build Status](https://travis-ci.org/StanSvec/dropwizard-authorization-el.svg?branch=master)](https://travis-ci.org/StanSvec/dropwizard-authorization-el)
 
 ### Expression Engine using Java Expression Language for dropwizard-authorization
 ```
