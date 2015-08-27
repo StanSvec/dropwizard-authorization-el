@@ -12,9 +12,9 @@ import javax.el.ImportHandler
 import javax.ws.rs.container.ContainerRequestContext
 
 /**
- * Variable provider for tests.
+ * Context provider for tests.
  */
-class TestContextProvider extends AbstractELContextProvider<TestUser> {
+class TestContextProvider extends DefaultELContextProvider<TestUser> {
 
     def TestContextProvider() {
         super(createImportHandler(), createVariables())
@@ -23,19 +23,19 @@ class TestContextProvider extends AbstractELContextProvider<TestUser> {
     static ImportHandler createImportHandler() {
         NoJavaLangImportHandler imports = new NoJavaLangImportHandler()
         imports.importClass("com.stansvec.dropwizard.auth.exp.TestUser")
-        imports.importStatic("com.stansvec.dropwizard.auth.exp.AuthorizationMethods.name")
+        imports.importStatic("com.stansvec.dropwizard.auth.exp.AuthorizationMethods.hasName")
         return imports
     }
 
     static List<Variable> createVariables() {
-        List<Variable> vars = new ArrayList<>()
-        vars.add(new Variable("username", "user.name"))
-        vars.add(new Variable("nameLength", "username.length()"))
-        return vars
+        return [new Variable("username", "user.name"),
+                new Variable("nameLength", "username.length()"),
+                new Variable("path", "uriInfo.path")]
     }
 
     @Override
-    protected void defineRequestVariables(Map<String, Object> beans, TestUser principal, ContainerRequestContext ctx) {
-
+    protected void defineRequestBeans(Map<String, Object> beans, TestUser principal, ContainerRequestContext ctx) {
+        beans.put("roles", principal.getRoles())
+        beans.put("uriInfo", ctx.getUriInfo())
     }
 }

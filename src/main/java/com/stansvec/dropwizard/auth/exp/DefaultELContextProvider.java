@@ -20,29 +20,38 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Allows subclasses to easily define imports and request variables.
- * Adding request variables <strong>user</strong> and <strong>principal</strong> for principal instance and <strong>ctx</strong> for {@link ContainerRequestContext}.
+ * Provides requested scoped context extended with global scope context.
+ *
+ * Global scope context can contain:
+ *  1. Custom imports by providing {@link ImportHandler}.
+ *  2. Custom variables by providing list of {@link Variable}s.
+ *
+ * Subclasses can define request scope bean variables by overriding {@link #defineRequestBeans(Map, Object, ContainerRequestContext)} method.
+ * Following bean variables are added to every request context:
+ *  1. <strong>user</strong> - containing principal instance
+ *  2. <strong>principal</strong> - alias for user, i.e. containing same principal instance as user variable
+ *  3. <strong>ctx</strong> - containing  {@link ContainerRequestContext}
  *
  * @author Stan Svec
  */
-public abstract class AbstractELContextProvider<P> implements ELContextProvider<P> {
+public class DefaultELContextProvider<P> implements ELContextProvider<P> {
 
-    // Not thread safe, but the state shouldn't be modified after publication in the current implementation
+    // Not thread safe class, but in the current implementation the state is not modified after publication
     private final ELContext globalContext;
 
-    public AbstractELContextProvider() {
+    public DefaultELContextProvider() {
         this(Collections.<Variable>emptyList());
     }
 
-    public AbstractELContextProvider(ImportHandler importHandler) {
+    public DefaultELContextProvider(ImportHandler importHandler) {
         this(importHandler, Collections.<Variable>emptyList());
     }
 
-    public AbstractELContextProvider(List<Variable> vars) {
+    public DefaultELContextProvider(List<Variable> vars) {
         this(new NoJavaLangImportHandler(), vars);
     }
 
-    public AbstractELContextProvider(ImportHandler importHandler, List<Variable> vars) {
+    public DefaultELContextProvider(ImportHandler importHandler, List<Variable> vars) {
         ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
         this.globalContext = new NoDefImportELContext(expressionFactory, checkNotNull(importHandler));
         this.globalContext.getELResolver(); // init ELResolver eagerly before publication
@@ -53,7 +62,9 @@ public abstract class AbstractELContextProvider<P> implements ELContextProvider<
         }
     }
 
-    protected abstract void defineRequestVariables(Map<String, Object> beans, P principal, ContainerRequestContext ctx);
+    protected void defineRequestBeans(Map<String, Object> beans, P principal, ContainerRequestContext ctx) {
+        // subclass may override and add another bean variables
+    }
 
     @Override
     public ELContext createRequestContext(P principal, ContainerRequestContext ctx) {
@@ -61,7 +72,7 @@ public abstract class AbstractELContextProvider<P> implements ELContextProvider<
         beans.put("user", principal);
         beans.put("principal", principal);
         beans.put("ctx", ctx);
-        defineRequestVariables(beans, principal, ctx);
+        defineRequestBeans(beans, principal, ctx);
         return createContext(beans);
     }
 
@@ -73,5 +84,4 @@ public abstract class AbstractELContextProvider<P> implements ELContextProvider<
 
         return manager.getELContext();
     }
-
 }

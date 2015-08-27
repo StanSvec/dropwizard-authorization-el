@@ -51,19 +51,21 @@ class AuthorizationTest extends Specification {
         "/protectedByExp/admin-exp-only"      | TestUser.USER       | Response.Status.UNAUTHORIZED
         "/protectedByExp/admin-no-exp"        | TestUser.ADMIN      | Response.Status.NO_CONTENT
         "/protectedByExp/admin-no-exp"        | TestUser.USER       | Response.Status.UNAUTHORIZED
-        "/protectedByExp/int-var"        | TestUser.ADMIN      | Response.Status.NO_CONTENT
-        "/protectedByExp/int-var"        | TestUser.USER       | Response.Status.UNAUTHORIZED
+        "/protectedByExp/int-var"             | TestUser.ADMIN      | Response.Status.NO_CONTENT
+        "/protectedByExp/int-var"             | TestUser.USER       | Response.Status.UNAUTHORIZED
         "/protectedByExp/static-field"        | TestUser.USER      | Response.Status.NO_CONTENT
         "/protectedByExp/static-field"        | TestUser.ADMIN       | Response.Status.UNAUTHORIZED
-        "/protectedByExp/lambda"        | TestUser.ADMIN      | Response.Status.NO_CONTENT
-        "/protectedByExp/lambda"        | TestUser.USER       | Response.Status.UNAUTHORIZED
+        "/protectedByExp/lambda"              | TestUser.ADMIN      | Response.Status.NO_CONTENT
+        "/protectedByExp/lambda"              | TestUser.USER       | Response.Status.UNAUTHORIZED
+        "/protectedByExp/user/admin1"         | TestUser.ADMIN      | Response.Status.NO_CONTENT
+        "/protectedByExp/user/admin1"         | TestUser.USER       | Response.Status.UNAUTHORIZED
     }
 
     int getStatus(ResourceTestRule resources, String resource, TestUser user) {
         return resources.getJerseyTest()
                 .target(resource)
                 .request()
-                .header(HttpHeaders.AUTHORIZATION, user != null ? "Basic " + DatatypeConverter.printBase64Binary((user.name + ":pass").getBytes("UTF-8")) : "")
+                .header(HttpHeaders.AUTHORIZATION, (user != null) ? "Basic " + DatatypeConverter.printBase64Binary((user.name + ":pass").getBytes("UTF-8")) : "")
                 .get()
                 .getStatus()
     }

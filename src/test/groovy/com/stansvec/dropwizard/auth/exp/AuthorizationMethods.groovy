@@ -11,7 +11,7 @@ package com.stansvec.dropwizard.auth.exp
  */
 class AuthorizationMethods {
 
-    static boolean name(def user, def name) {
+    static boolean hasName(def user, def name) {
         return user.name == name
     }
 }

@@ -25,23 +25,28 @@ class ProtectedResource {
 
     @GET
     @Path("/admin-exp-only")
-    @Auth(check = "name(user, 'admin1') && principal.roles.stream().anyMatch(r -> r == 'ADMIN_ROLE')")
-    void expressionOnly() {}
+    @Auth(check = "hasName(user, 'admin1') && roles.stream().anyMatch(r -> (r == 'ADMIN_ROLE'))")
+    void methodExecutionAndStreamUsage() {}
 
     @GET
     @Path("/int-var")
     @Auth(check = "nameLength == 6")
-    void intVariable() {}
+    void variableUsage() {}
 
     @GET
     @Path("/static-field")
     @Auth(check = "TestUser.USER.name == username")
-    void staticField() {}
+    void staticFieldUsage() {}
 
     @GET
     @Path("/lambda")
     @Auth(check = "(s -> s.toUpperCase().substring(0, s.length() - 1)) (username) == 'ADMIN'")
-    void lambda() {}
+    void lambdaUsage() {}
+
+    @GET
+    @Path("/user/admin1")
+    @Auth(check = "path == 'protectedByExp/user/' += username")
+    void pathVariable() {}
 
     @GET
     @Path("/admin-no-exp")

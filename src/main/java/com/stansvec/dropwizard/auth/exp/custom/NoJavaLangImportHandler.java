@@ -9,7 +9,7 @@ package com.stansvec.dropwizard.auth.exp.custom;
 import javax.el.ImportHandler;
 
 /**
- * Forbids java.lang import.
+ * Forbids java.lang package import unless explicitly requested.
  *
  * @author Stan Svec
  */
