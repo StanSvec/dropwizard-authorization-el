@@ -64,7 +64,7 @@ publishing {
     }
     repositories {
         maven {
-            url 'https://api.bintray.com/maven/stansvec/maven/dropwizard-authorization-mvel'
+            url 'https://api.bintray.com/maven/stansvec/maven/dropwizard-authorization-el'
             credentials {
                 username 'stansvec'
                 password 'Insert API key here'
